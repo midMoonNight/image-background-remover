@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "image-background-remover",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-07-14",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "vars": {
+    "ALLOWED_ORIGIN": "http://localhost:3000",
+    "MAX_FILE_SIZE_BYTES": "10485760"
+  }
+}
