@@ -5,6 +5,7 @@ import { DEFAULT_MAX_FILE_SIZE } from "@/lib/constants";
 import { hasValidImageSignature, validateFile } from "@/lib/file-validation";
 import {
   errorBody,
+  isAllowedOrigin,
   mapRemoveBgStatus,
   verifyTurnstile,
   type RemoveBgEnvironment,
@@ -30,9 +31,8 @@ function getEnvironment(): RemoveBgEnvironment {
 export async function POST(request: NextRequest) {
   const env = getEnvironment();
   const origin = request.headers.get("origin");
-  const allowedOrigin = env.ALLOWED_ORIGIN?.trim();
 
-  if (allowedOrigin && origin && origin !== allowedOrigin) {
+  if (!isAllowedOrigin(origin, env.ALLOWED_ORIGIN)) {
     return jsonError("VERIFICATION_FAILED", 403);
   }
 

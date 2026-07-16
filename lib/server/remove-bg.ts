@@ -7,6 +7,16 @@ export type RemoveBgEnvironment = {
   MAX_FILE_SIZE_BYTES?: string;
 };
 
+export function isAllowedOrigin(origin: string | null, allowedOrigins?: string): boolean {
+  if (!origin || !allowedOrigins?.trim()) return true;
+
+  return allowedOrigins
+    .split(",")
+    .map((allowedOrigin) => allowedOrigin.trim())
+    .filter(Boolean)
+    .includes(origin);
+}
+
 type TurnstileResponse = {
   success: boolean;
   "error-codes"?: string[];

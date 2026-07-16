@@ -9,7 +9,7 @@
     "directory": ".open-next/assets"
   },
   "vars": {
-    "ALLOWED_ORIGIN": "https://image-background-remover.577950300.workers.dev",
+    "ALLOWED_ORIGIN": "https://listingcut.shop,https://www.listingcut.shop",
     "MAX_FILE_SIZE_BYTES": "10485760"
   }
 }
