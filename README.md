@@ -10,7 +10,8 @@ A Cloudflare-deployed Next.js MVP for converting batches of product photos into 
 - Apply white or transparent backgrounds in the browser.
 - Export Original, Amazon, Etsy, or Shopify canvas presets.
 - Download individual PNGs or a client-generated ZIP.
-- No database, R2, KV, Durable Objects, image history, or server-side ZIP storage.
+- No persistent image storage, image history, or server-side ZIP storage.
+- D1 stores Google account profiles and hashed login sessions only.
 
 ## Stack
 
@@ -20,6 +21,8 @@ A Cloudflare-deployed Next.js MVP for converting batches of product photos into 
 - OpenNext for Cloudflare Workers
 - Remove.bg API
 - Cloudflare Turnstile
+- Google OAuth 2.0
+- Cloudflare D1 for users and sessions
 
 ## Local development
 
@@ -60,8 +63,14 @@ The examples use Cloudflare's always-pass Turnstile test keys. Production must u
 | `TURNSTILE_SECRET_KEY` | Cloudflare secret | Turnstile server verification |
 | `ALLOWED_ORIGIN` | Wrangler variable | Exact production site origin |
 | `MAX_FILE_SIZE_BYTES` | Wrangler variable | Per-image request limit; defaults to 10 MB |
+| `GOOGLE_CLIENT_ID` | Wrangler variable | Google OAuth client identifier |
+| `GOOGLE_CLIENT_SECRET` | Cloudflare secret | Google OAuth client secret |
+| `AUTH_DB` | Cloudflare D1 binding | User and session database |
 
 Never expose `REMOVE_BG_API_KEY` or `TURNSTILE_SECRET_KEY` as `NEXT_PUBLIC_*` variables.
+
+The Google OAuth callback is `/api/auth/google/callback`. Apply `migrations/0001_auth.sql`
+to the `listingcut-auth` D1 database before testing login.
 
 ## Verification
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { AuthControls } from "@/components/auth-controls";
 import { SparkleIcon } from "@/components/icons";
 
 export function SiteHeader() {
@@ -14,6 +15,7 @@ export function SiteHeader() {
       <nav className="flex items-center gap-4 text-sm font-semibold text-slate-600 sm:gap-7" aria-label="Main navigation">
         <a href="#how-it-works" className="hidden hover:text-slate-950 sm:block">How it works</a>
         <Link href="/privacy" className="hover:text-slate-950">Privacy</Link>
+        <AuthControls />
         <a href="#tool" className="rounded-full bg-slate-950 px-4 py-2 text-white hover:bg-slate-800">Try it free</a>
       </nav>
     </header>

@@ -16,7 +16,7 @@ export default function Home() {
             Clean backgrounds.<br /><span className="text-violet-600">Whole batches.</span>
           </h1>
           <p className="mx-auto mt-7 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-            Remove distracting backgrounds, apply a consistent white canvas, and export listing-ready product images without accounts or cloud storage.
+            Remove distracting backgrounds, apply a consistent white canvas, and export listing-ready product images without storing your photos.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm font-medium text-slate-500">
             <span className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-emerald-500" /> Up to 20 images</span>
