@@ -13,10 +13,11 @@ export function SiteHeader() {
         <span className="font-[family-name:var(--font-heading)] text-lg font-extrabold tracking-tight">Clearcut</span>
       </Link>
       <nav className="flex items-center gap-4 text-sm font-semibold text-slate-600 sm:gap-7" aria-label="Main navigation">
-        <a href="#how-it-works" className="hidden hover:text-slate-950 sm:block">How it works</a>
-        <Link href="/privacy" className="hover:text-slate-950">Privacy</Link>
+        <Link href="/#how-it-works" className="hidden hover:text-slate-950 lg:block">How it works</Link>
+        <Link href="/pricing" className="hover:text-slate-950">Pricing</Link>
+        <Link href="/privacy" className="hidden hover:text-slate-950 md:block">Privacy</Link>
         <AuthControls />
-        <a href="#tool" className="rounded-full bg-slate-950 px-4 py-2 text-white hover:bg-slate-800">Try it free</a>
+        <Link href="/#tool" className="hidden rounded-full bg-slate-950 px-4 py-2 text-white hover:bg-slate-800 sm:block">Try it free</Link>
       </nav>
     </header>
   );
