@@ -87,7 +87,7 @@ export default function PricingPage() {
             </article>
           ))}
         </div>
-        <p className="mt-6 text-center text-sm text-slate-500">Sandbox checkout is enabled for testing. No real money is charged while PayPal Sandbox is active.</p>
+        <p className="mt-6 text-center text-sm text-slate-500">Secure one-time checkout via PayPal. Credits are added immediately after a completed payment.</p>
       </section>
 
       <section className="bg-slate-950 py-20 text-white noise-grid">

@@ -19,9 +19,9 @@
   "vars": {
     "ALLOWED_ORIGIN": "https://listingcut.shop,https://www.listingcut.shop",
     "GOOGLE_CLIENT_ID": "967154859393-gsc9mk0njpnr704rkspdjf7gdmjj217m.apps.googleusercontent.com",
-    "PAYPAL_CLIENT_ID": "BAASjbNvnJrN5F8tNtGgqFtQ-Bo3xmvTmEVx6So6FMJnBtghsAOmpHFPRlPyK4lP7AAPXc0PjpfdZFP8b0",
-    "PAYPAL_ENV": "sandbox",
-    "PAYPAL_WEBHOOK_ID": "5PE23570A2309015X",
+    "PAYPAL_CLIENT_ID": "BAA-xsvbKOJ8203uVgCTbBKxcdofNEzhAocHX9ydbgCNlpklwGGM_n2jrbpwiFC7r6ONWTjG8fmzRoMvY4",
+    "PAYPAL_ENV": "live",
+    "PAYPAL_WEBHOOK_ID": "4MN843501M489632D",
     "MAX_FILE_SIZE_BYTES": "10485760"
   }
 }
