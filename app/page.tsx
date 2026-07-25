@@ -8,17 +8,17 @@ export default function Home() {
     <main className="min-h-screen overflow-hidden">
       <div className="relative bg-[radial-gradient(circle_at_80%_15%,rgba(196,181,253,.45),transparent_28%),linear-gradient(180deg,#fff_0%,#f7f7fb_100%)]">
         <SiteHeader />
-        <section className="relative mx-auto max-w-7xl px-5 pb-14 pt-16 text-center sm:px-8 sm:pt-24 lg:px-10 lg:pb-20">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-violet-700 shadow-sm">
-            <SparkleIcon className="size-4" /> Product photos, ready to list
+        <section className="relative mx-auto max-w-7xl px-5 pb-10 pt-10 text-center sm:px-8 sm:pt-14 lg:px-10 lg:pb-14">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-violet-700 shadow-sm">
+            <SparkleIcon className="size-3.5" /> Product photos, ready to list
           </div>
-          <h1 className="mx-auto mt-7 max-w-4xl text-5xl font-extrabold leading-[0.98] text-slate-950 sm:text-6xl lg:text-8xl">
+          <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-extrabold leading-[0.98] text-slate-950 sm:text-5xl lg:text-6xl">
             Clean backgrounds.<br /><span className="text-violet-600">Whole batches.</span>
           </h1>
-          <p className="mx-auto mt-7 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-600">
             Remove distracting backgrounds, apply a consistent white canvas, and export listing-ready product images without storing your photos.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm font-medium text-slate-500">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm font-medium text-slate-500">
             <span className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-emerald-500" /> Up to 20 images</span>
             <span className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-emerald-500" /> Client-side ZIP</span>
             <span className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-emerald-500" /> No image history</span>
