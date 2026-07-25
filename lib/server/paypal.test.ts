@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { completedCapture, finalizePayPalOrder } from "@/lib/server/paypal";
+import {
+  completedCapture,
+  completedRefund,
+  finalizePayPalOrder,
+  revokeRefundedPayPalOrder,
+} from "@/lib/server/paypal";
 
 describe("completedCapture", () => {
   it("extracts the authoritative completed capture", () => {
@@ -83,5 +88,86 @@ describe("finalizePayPalOrder", () => {
       paypalOrderId: "paypal-order",
       payment: { captureId: "other-capture", currency: "USD", amount: "19.99" },
     })).rejects.toThrow("another capture");
+  });
+});
+
+describe("completedRefund", () => {
+  it("extracts the capture ID from the PayPal parent link", () => {
+    expect(completedRefund({
+      id: "refund-id",
+      status: "COMPLETED",
+      amount: { currency_code: "USD", value: "19.99" },
+      links: [{ rel: "up", href: "https://api-m.sandbox.paypal.com/v2/payments/captures/capture-id" }],
+    })).toEqual({
+      refundId: "refund-id",
+      captureId: "capture-id",
+      currency: "USD",
+      amount: "19.99",
+    });
+  });
+
+  it("rejects incomplete refunds", () => {
+    expect(completedRefund({ id: "refund-id", status: "PENDING" })).toBeNull();
+  });
+});
+
+describe("revokeRefundedPayPalOrder", () => {
+  function databaseFor(amount: string, status = "completed") {
+    const statements: Array<{ sql: string; values: unknown[] }> = [];
+    return {
+      statements,
+      database: {
+        prepare: (sql: string) => {
+          const statement = {
+            sql,
+            values: [] as unknown[],
+            bind(...values: unknown[]) {
+              statement.values = values;
+              statements.push(statement);
+              return statement;
+            },
+            first: async () => ({
+              id: "local-order",
+              user_id: "user-id",
+              amount_usd: "19.99",
+              currency: "USD",
+              credits: 40,
+              status,
+              paypal_capture_id: "capture-id",
+            }),
+          };
+          return statement;
+        },
+        batch: async () => [],
+      },
+      input: {
+        captureId: "capture-id",
+        refundId: "refund-id",
+        currency: "USD",
+        amount,
+      },
+    };
+  }
+
+  it("revokes unused credits after a full refund", async () => {
+    const fixture = databaseFor("19.99");
+    await expect(revokeRefundedPayPalOrder({
+      database: fixture.database as never,
+      ...fixture.input,
+    })).resolves.toBe(true);
+
+    expect(fixture.statements.some((statement) => statement.sql.includes("credits_used = credits_total"))).toBe(true);
+    expect(fixture.statements.some((statement) => statement.sql.includes("status = 'refunded'"))).toBe(true);
+    expect(fixture.statements.some((statement) => statement.sql.includes("status = 'revoked'"))).toBe(true);
+  });
+
+  it("does not revoke the credit pack after a partial refund", async () => {
+    const fixture = databaseFor("5.00");
+    await expect(revokeRefundedPayPalOrder({
+      database: fixture.database as never,
+      ...fixture.input,
+    })).resolves.toBe(true);
+
+    expect(fixture.statements).toHaveLength(1);
   });
 });

@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getAuthEnvironment } from "@/lib/server/auth-context";
 import {
+  completedRefund,
   finalizePayPalOrder,
+  revokeRefundedPayPalOrder,
   verifyPayPalWebhook,
   type PayPalEnvironment,
 } from "@/lib/server/paypal";
@@ -17,7 +19,8 @@ type CaptureEvent = {
     status?: string;
     amount?: { currency_code?: string; value?: string };
     custom_id?: string;
-    supplementary_data?: { related_ids?: { order_id?: string } };
+    supplementary_data?: { related_ids?: { order_id?: string; capture_id?: string } };
+    links?: Array<{ href?: string; rel?: string }>;
   };
 };
 
@@ -74,6 +77,13 @@ export async function POST(request: NextRequest) {
         },
       });
       if (!finalized) throw new Error("Local PayPal order was not found");
+    }
+
+    if (event.event_type === "PAYMENT.CAPTURE.REFUNDED") {
+      const refund = completedRefund(event.resource ?? {});
+      if (!refund) throw new Error("Incomplete refund event");
+      const revoked = await revokeRefundedPayPalOrder({ database: env.AUTH_DB, ...refund });
+      if (!revoked) throw new Error("Local PayPal order was not found");
     }
 
     await env.AUTH_DB

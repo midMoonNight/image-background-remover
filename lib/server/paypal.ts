@@ -138,6 +138,14 @@ type LocalOrder = {
   paypal_capture_id: string | null;
 };
 
+type PayPalRefundResource = {
+  id?: string;
+  status?: string;
+  amount?: { currency_code?: string; value?: string };
+  supplementary_data?: { related_ids?: { capture_id?: string } };
+  links?: Array<{ href?: string; rel?: string }>;
+};
+
 export type CompletedPayment = {
   captureId: string;
   currency: string;
@@ -205,6 +213,87 @@ export async function finalizePayPalOrder(input: {
          WHERE id = ? AND status != 'completed'`,
       )
       .bind(input.payment.captureId, now.toISOString(), now.toISOString(), order.id),
+  ]);
+  return true;
+}
+
+export function completedRefund(resource: PayPalRefundResource): {
+  refundId: string;
+  captureId: string;
+  currency: string;
+  amount: string;
+} | null {
+  if (resource.status !== "COMPLETED") return null;
+  const captureUrl = resource.links?.find((link) => link.rel === "up")?.href;
+  const captureId = resource.supplementary_data?.related_ids?.capture_id
+    ?? captureUrl?.match(/\/captures\/([^/?#]+)/)?.[1];
+  if (!resource.id || !captureId || !resource.amount?.currency_code || !resource.amount.value) return null;
+  return {
+    refundId: resource.id,
+    captureId: decodeURIComponent(captureId),
+    currency: resource.amount.currency_code,
+    amount: resource.amount.value,
+  };
+}
+
+function amountInCents(value: string): number | null {
+  if (!/^\d+\.\d{2}$/.test(value)) return null;
+  const cents = Number(value.replace(".", ""));
+  return Number.isSafeInteger(cents) ? cents : null;
+}
+
+export async function revokeRefundedPayPalOrder(input: {
+  database: AuthDatabase;
+  captureId: string;
+  refundId: string;
+  currency: string;
+  amount: string;
+}): Promise<boolean> {
+  const order = await input.database
+    .prepare(
+      `SELECT id, user_id, amount_usd, currency, credits, status, paypal_capture_id
+       FROM paypal_orders WHERE paypal_capture_id = ?`,
+    )
+    .bind(input.captureId)
+    .first<LocalOrder>();
+  if (!order) return false;
+  if (input.currency !== order.currency) throw new Error("PayPal refund currency does not match the local order");
+
+  const refundCents = amountInCents(input.amount);
+  const orderCents = amountInCents(order.amount_usd);
+  if (refundCents === null || orderCents === null || refundCents > orderCents) {
+    throw new Error("PayPal refund amount is invalid");
+  }
+  if (refundCents < orderCents || order.status === "refunded") return true;
+
+  const now = new Date().toISOString();
+  await input.database.batch([
+    input.database
+      .prepare(
+        `INSERT OR IGNORE INTO credit_ledger
+          (id, user_id, grant_id, event_type, delta, reference_id, created_at)
+         SELECT ?, user_id, id, 'payment_refunded', -(credits_total - credits_used), ?, ?
+         FROM credit_grants WHERE order_id = ?`,
+      )
+      .bind(crypto.randomUUID(), input.refundId, now, order.id),
+    input.database
+      .prepare(
+        `UPDATE credit_grants SET credits_used = credits_total
+         WHERE order_id = ? AND credits_used < credits_total`,
+      )
+      .bind(order.id),
+    input.database
+      .prepare(
+        `UPDATE credit_reservations SET status = 'revoked', updated_at = ?
+         WHERE grant_id IN (SELECT id FROM credit_grants WHERE order_id = ?) AND status = 'pending'`,
+      )
+      .bind(now, order.id),
+    input.database
+      .prepare(
+        `UPDATE paypal_orders SET status = 'refunded', updated_at = ?
+         WHERE id = ? AND status = 'completed'`,
+      )
+      .bind(now, order.id),
   ]);
   return true;
 }
