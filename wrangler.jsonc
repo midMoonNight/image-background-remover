@@ -8,6 +8,12 @@
     "binding": "ASSETS",
     "directory": ".open-next/assets"
   },
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  },
   "d1_databases": [
     {
       "binding": "AUTH_DB",

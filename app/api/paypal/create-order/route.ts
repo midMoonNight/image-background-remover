@@ -47,7 +47,8 @@ export async function POST(request: NextRequest) {
       .bind(paypal.paypalOrderId, new Date().toISOString(), localOrderId)
       .run();
     return NextResponse.json({ approvalUrl: paypal.approvalUrl });
-  } catch {
+  } catch (error) {
+    console.error("PayPal order creation failed:", error instanceof Error ? error.message : "Unknown error");
     await env.AUTH_DB
       .prepare("UPDATE paypal_orders SET status = 'create_failed', updated_at = ? WHERE id = ?")
       .bind(new Date().toISOString(), localOrderId)
