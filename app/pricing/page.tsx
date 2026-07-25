@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { ShieldIcon, SparkleIcon } from "@/components/icons";
+import { PricingStatus } from "@/components/pricing-status";
+import { PurchaseButton } from "@/components/purchase-button";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -12,9 +15,9 @@ export const metadata: Metadata = {
 
 const plans = [
   { name: "Free Trial", price: "$0", credits: "2 images", unitPrice: "One-time welcome credit", description: "See the full workflow before you buy.", audience: "New users", cta: "Start free", featured: false, features: ["Full-quality PNG output", "White or transparent background", "Marketplace canvas presets"] },
-  { name: "Starter", price: "$5.99", credits: "10 images", unitPrice: "$0.60 per image", description: "A small pack for occasional product listings.", audience: "Casual sellers", cta: "Choose Starter", featured: false, features: ["Everything in Free Trial", "Credits valid for 12 months", "Individual and ZIP downloads"] },
-  { name: "Seller", price: "$19.99", credits: "40 images", unitPrice: "$0.50 per image", description: "The practical choice for an active online store.", audience: "Regular sellers", cta: "Choose Seller", featured: true, features: ["Everything in Starter", "Process batches of up to 20", "Best balance of price and volume"] },
-  { name: "Business", price: "$39.99", credits: "100 images", unitPrice: "$0.40 per image", description: "More room for studios and growing catalogs.", audience: "Teams and studios", cta: "Choose Business", featured: false, features: ["Everything in Seller", "Lowest price per image", "Built for larger product catalogs"] },
+  { id: "starter", name: "Starter", price: "$5.99", credits: "10 images", unitPrice: "$0.60 per image", description: "A small pack for occasional product listings.", audience: "Casual sellers", cta: "Choose Starter", featured: false, features: ["Everything in Free Trial", "Credits valid for 30 days", "Individual and ZIP downloads"] },
+  { id: "seller", name: "Seller", price: "$19.99", credits: "40 images", unitPrice: "$0.50 per image", description: "The practical choice for an active online store.", audience: "Regular sellers", cta: "Choose Seller", featured: true, features: ["Everything in Starter", "Process batches of up to 20", "Best balance of price and volume"] },
+  { id: "business", name: "Business", price: "$39.99", credits: "100 images", unitPrice: "$0.40 per image", description: "More room for studios and growing catalogs.", audience: "Teams and studios", cta: "Choose Business", featured: false, features: ["Everything in Seller", "Lowest price per image", "Built for larger product catalogs"] },
 ] as const;
 
 const commonFeatures = [
@@ -27,7 +30,7 @@ const commonFeatures = [
 ];
 
 const faqs = [
-  { question: "Do credits expire?", answer: "Paid credits are valid for 12 months from purchase. Free Trial credits are granted once per Google account." },
+  { question: "Do credits expire?", answer: "Each one-time purchase provides a monthly image allowance valid for 30 days. Free Trial credits are granted once per Google account and are also valid for 30 days." },
   { question: "When is a credit charged?", answer: "One credit is charged only after the background-removal service returns a successful result. Failed requests and network errors do not consume a credit." },
   { question: "Do background and size changes use more credits?", answer: "No. Switching between white and transparent backgrounds or changing marketplace canvas presets happens in your browser and does not spend another credit." },
   { question: "Is this a subscription?", answer: "No. These are one-time credit packs with no automatic renewal. We may introduce optional subscriptions later for high-volume users." },
@@ -50,12 +53,15 @@ export default function PricingPage() {
             Buy an image credit pack without a subscription. Every plan includes the complete background-removal workflow and marketplace-ready exports.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-medium text-slate-500">
-            <span>No automatic renewal</span><span>12-month paid credit validity</span><span>Failed jobs cost 0 credits</span>
+            <span>No automatic renewal</span><span>30-day monthly allowance</span><span>Failed jobs cost 0 credits</span>
           </div>
         </section>
       </div>
 
       <section className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-10">
+        <Suspense fallback={null}>
+          <PricingStatus />
+        </Suspense>
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {plans.map((plan) => (
             <article key={plan.name} className={`relative flex min-h-full flex-col rounded-[2rem] border bg-white p-7 shadow-[0_20px_60px_rgba(15,23,42,.07)] ${plan.featured ? "border-violet-500 ring-4 ring-violet-100" : "border-slate-200"}`}>
@@ -69,7 +75,11 @@ export default function PricingPage() {
                 <div className="flex items-end gap-2"><span className="text-4xl font-extrabold tracking-tight text-slate-950">{plan.price}</span>{plan.price !== "$0" && <span className="pb-1 text-sm text-slate-500">one time</span>}</div>
                 <p className="mt-2 text-lg font-bold text-slate-900">{plan.credits}</p><p className="mt-1 text-sm text-slate-500">{plan.unitPrice}</p>
               </div>
-              <Link href="/api/auth/google" className={`mt-7 rounded-full px-5 py-3 text-center text-sm font-bold transition ${plan.featured ? "bg-violet-600 text-white hover:bg-violet-500" : "bg-slate-950 text-white hover:bg-slate-800"}`}>{plan.cta}</Link>
+              {"id" in plan ? (
+                <PurchaseButton planId={plan.id} featured={plan.featured}>{plan.cta}</PurchaseButton>
+              ) : (
+                <Link href="/api/auth/google?returnTo=%2Fpricing" className="mt-7 rounded-full bg-slate-950 px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-slate-800">{plan.cta}</Link>
+              )}
               <div className="my-7 h-px bg-slate-200" />
               <ul className="space-y-3 text-sm leading-5 text-slate-600">
                 {plan.features.map((feature) => <li key={feature} className="flex gap-3"><span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-emerald-100 text-xs font-black text-emerald-700">✓</span>{feature}</li>)}
@@ -77,7 +87,7 @@ export default function PricingPage() {
             </article>
           ))}
         </div>
-        <p className="mt-6 text-center text-sm text-slate-500">Payment checkout is coming next. Sign in now to secure your one-time Free Trial credits when purchases open.</p>
+        <p className="mt-6 text-center text-sm text-slate-500">Sandbox checkout is enabled for testing. No real money is charged while PayPal Sandbox is active.</p>
       </section>
 
       <section className="bg-slate-950 py-20 text-white noise-grid">

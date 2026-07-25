@@ -66,6 +66,10 @@ The examples use Cloudflare's always-pass Turnstile test keys. Production must u
 | `GOOGLE_CLIENT_ID` | Wrangler variable | Google OAuth client identifier |
 | `GOOGLE_CLIENT_SECRET` | Cloudflare secret | Google OAuth client secret |
 | `AUTH_DB` | Cloudflare D1 binding | User and session database |
+| `PAYPAL_CLIENT_ID` | Wrangler variable | PayPal REST application client identifier |
+| `PAYPAL_CLIENT_SECRET` | Cloudflare secret | PayPal REST application secret |
+| `PAYPAL_ENV` | Wrangler variable | `sandbox` during testing, `live` for real payments |
+| `PAYPAL_WEBHOOK_ID` | Wrangler variable | PayPal webhook identifier used for signature verification |
 
 Never expose `REMOVE_BG_API_KEY` or `TURNSTILE_SECRET_KEY` as `NEXT_PUBLIC_*` variables.
 

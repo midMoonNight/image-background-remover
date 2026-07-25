@@ -1,6 +1,8 @@
 import { APP_ERROR_MESSAGES, type AppErrorCode } from "@/lib/constants";
+import type { AuthDatabase } from "@/lib/server/auth";
 
 export type RemoveBgEnvironment = {
+  AUTH_DB?: AuthDatabase;
   REMOVE_BG_API_KEY?: string;
   TURNSTILE_SECRET_KEY?: string;
   ALLOWED_ORIGIN?: string;

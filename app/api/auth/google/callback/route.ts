@@ -6,9 +6,11 @@ import {
   exchangeGoogleCode,
   fetchGoogleProfile,
   OAUTH_STATE_COOKIE,
+  OAUTH_RETURN_COOKIE,
   OAUTH_VERIFIER_COOKIE,
   SESSION_COOKIE,
   SESSION_MAX_AGE_SECONDS,
+  safeReturnPath,
   upsertGoogleUser,
 } from "@/lib/server/auth";
 import { getAuthEnvironment } from "@/lib/server/auth-context";
@@ -18,6 +20,7 @@ export const runtime = "nodejs";
 function clearOAuthCookies(response: NextResponse) {
   response.cookies.delete(OAUTH_STATE_COOKIE);
   response.cookies.delete(OAUTH_VERIFIER_COOKIE);
+  response.cookies.delete(OAUTH_RETURN_COOKIE);
 }
 
 export async function GET(request: NextRequest) {
@@ -54,7 +57,8 @@ export async function GET(request: NextRequest) {
     });
     const user = await upsertGoogleUser(env.AUTH_DB, await fetchGoogleProfile(accessToken));
     const sessionToken = await createSession(env.AUTH_DB, user.id);
-    const response = NextResponse.redirect(new URL("/", origin));
+    const returnTo = safeReturnPath(request.cookies.get(OAUTH_RETURN_COOKIE)?.value ?? null);
+    const response = NextResponse.redirect(new URL(returnTo, origin));
     clearOAuthCookies(response);
     response.cookies.set(SESSION_COOKIE, sessionToken, {
       httpOnly: true,

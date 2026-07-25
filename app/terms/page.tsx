@@ -13,6 +13,7 @@ export default function TermsPage() {
           <section><h2 className="text-xl font-bold text-slate-950">Automated results</h2><p className="mt-2">Background removal is automated and may be inaccurate, especially around hair, fur, glass, netting, smoke, shadows, or low-contrast subjects. Review every image before publishing it.</p></section>
           <section><h2 className="text-xl font-bold text-slate-950">Marketplace compliance</h2><p className="mt-2">Canvas presets are workflow aids, not a guarantee that Amazon, Etsy, Shopify, or another marketplace will approve or rank an image.</p></section>
           <section><h2 className="text-xl font-bold text-slate-950">Availability</h2><p className="mt-2">The service depends on Cloudflare and Remove.bg. It may be rate-limited, paused, or unavailable, and unsaved results cannot be recovered after the page closes.</p></section>
+          <section><h2 className="text-xl font-bold text-slate-950">One-time credit packs</h2><p className="mt-2">Paid packs are one-time purchases, not subscriptions, and do not renew automatically. Each purchased allowance expires 30 days after payment. One credit is used only after a successful background-removal response; failed processing requests do not consume a credit.</p></section>
           <section><h2 className="text-xl font-bold text-slate-950">Fair use</h2><p className="mt-2">Do not bypass verification, automate abusive request volumes, resell access without permission, or attempt to discover service credentials.</p></section>
         </div>
       </article>

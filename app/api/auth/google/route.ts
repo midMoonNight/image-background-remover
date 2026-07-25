@@ -5,6 +5,7 @@ import {
   createPkceChallenge,
   googleAuthorizationUrl,
   OAUTH_COOKIE_MAX_AGE_SECONDS,
+  OAUTH_RETURN_COOKIE,
   OAUTH_STATE_COOKIE,
   OAUTH_VERIFIER_COOKIE,
   randomToken,
@@ -22,6 +23,7 @@ export async function GET(request: NextRequest) {
 
   const state = randomToken();
   const verifier = randomToken(48);
+  const returnTo = request.nextUrl.searchParams.get("returnTo");
   const redirectUri = `${origin}/api/auth/google/callback`;
   const response = NextResponse.redirect(
     googleAuthorizationUrl({
@@ -40,5 +42,6 @@ export async function GET(request: NextRequest) {
   };
   response.cookies.set(OAUTH_STATE_COOKIE, state, cookieOptions);
   response.cookies.set(OAUTH_VERIFIER_COOKIE, verifier, cookieOptions);
+  if (returnTo) response.cookies.set(OAUTH_RETURN_COOKIE, returnTo, cookieOptions);
   return response;
 }

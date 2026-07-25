@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { DEFAULT_MAX_FILE_SIZE } from "@/lib/constants";
 import { hasValidImageSignature, validateFile } from "@/lib/file-validation";
+import { getSessionUser, SESSION_COOKIE } from "@/lib/server/auth";
+import { commitCredit, refundCredit, reserveCredit } from "@/lib/server/credits";
 import {
   errorBody,
   isAllowedOrigin,
@@ -36,9 +38,12 @@ export async function POST(request: NextRequest) {
     return jsonError("VERIFICATION_FAILED", 403);
   }
 
-  if (!env.REMOVE_BG_API_KEY || !env.TURNSTILE_SECRET_KEY) {
+  if (!env.REMOVE_BG_API_KEY || !env.TURNSTILE_SECRET_KEY || !env.AUTH_DB) {
     return jsonError("UPSTREAM_UNAVAILABLE", 503);
   }
+
+  const user = await getSessionUser(env.AUTH_DB, request.cookies.get(SESSION_COOKIE)?.value);
+  if (!user) return jsonError("AUTH_REQUIRED", 401);
 
   let formData: FormData;
   try {
@@ -72,6 +77,9 @@ export async function POST(request: NextRequest) {
   const verified = await verifyTurnstile(env.TURNSTILE_SECRET_KEY, turnstileToken, remoteIp);
   if (!verified) return jsonError("VERIFICATION_FAILED", 403);
 
+  const reservation = await reserveCredit(env.AUTH_DB, user.id);
+  if (!reservation) return jsonError("INSUFFICIENT_CREDITS", 402);
+
   const upstreamForm = new FormData();
   upstreamForm.append("image_file", image, image.name);
   upstreamForm.append("size", "auto");
@@ -85,13 +93,17 @@ export async function POST(request: NextRequest) {
       body: upstreamForm,
     });
   } catch {
+    await refundCredit(env.AUTH_DB, user.id, reservation);
     return jsonError("UPSTREAM_UNAVAILABLE", 502);
   }
 
   if (!upstream.ok || !upstream.body) {
+    await refundCredit(env.AUTH_DB, user.id, reservation);
     const code = mapRemoveBgStatus(upstream.status);
     return jsonError(code, upstream.status >= 500 ? 502 : upstream.status);
   }
+
+  await commitCredit(env.AUTH_DB, user.id, reservation);
 
   return new Response(upstream.body, {
     status: 200,

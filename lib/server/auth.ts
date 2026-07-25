@@ -1,6 +1,7 @@
 export const SESSION_COOKIE = "listingcut_session";
 export const OAUTH_STATE_COOKIE = "listingcut_oauth_state";
 export const OAUTH_VERIFIER_COOKIE = "listingcut_oauth_verifier";
+export const OAUTH_RETURN_COOKIE = "listingcut_oauth_return";
 
 export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 export const OAUTH_COOKIE_MAX_AGE_SECONDS = 60 * 10;
@@ -17,21 +18,41 @@ export type AuthEnvironment = {
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;
   ALLOWED_ORIGIN?: string;
+  PAYPAL_CLIENT_ID?: string;
+  PAYPAL_CLIENT_SECRET?: string;
+  PAYPAL_ENV?: string;
+  PAYPAL_WEBHOOK_ID?: string;
 };
 
 type D1RunResult = {
   success: boolean;
+  meta?: { changes?: number };
 };
 
 type D1PreparedStatement = {
   bind(...values: unknown[]): D1PreparedStatement;
   first<T>(): Promise<T | null>;
+  all<T>(): Promise<{ results: T[] }>;
   run(): Promise<D1RunResult>;
 };
 
 export type AuthDatabase = {
   prepare(query: string): D1PreparedStatement;
+  batch(statements: D1PreparedStatement[]): Promise<D1RunResult[]>;
 };
+
+export function safeReturnPath(value: string | null): string {
+  if (
+    !value ||
+    !value.startsWith("/") ||
+    value.startsWith("//") ||
+    value.includes("\\") ||
+    /[\u0000-\u001f\u007f]/.test(value)
+  ) {
+    return "/";
+  }
+  return value;
+}
 
 type GoogleProfile = {
   sub: string;

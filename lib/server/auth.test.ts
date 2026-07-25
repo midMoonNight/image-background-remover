@@ -5,6 +5,7 @@ import {
   createPkceChallenge,
   googleAuthorizationUrl,
   randomToken,
+  safeReturnPath,
   sha256,
 } from "@/lib/server/auth";
 
@@ -39,4 +40,17 @@ describe("Google OAuth helpers", () => {
     expect(await sha256("value")).toBe(await sha256("value"));
     expect(await sha256("value")).not.toBe(await sha256("other"));
   });
+});
+
+describe("safeReturnPath", () => {
+  it("allows local application paths", () => {
+    expect(safeReturnPath("/pricing?payment=cancelled")).toBe("/pricing?payment=cancelled");
+  });
+
+  it.each([null, "https://example.com", "//example.com", "/\\example.com", "pricing"])(
+    "rejects unsafe return value %s",
+    (value) => {
+      expect(safeReturnPath(value)).toBe("/");
+    },
+  );
 });

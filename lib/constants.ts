@@ -40,6 +40,8 @@ export const APP_ERROR_MESSAGES = {
   FILE_TOO_LARGE: "This image is too large. Compress it and try again.",
   TOO_MANY_FILES: `You can process up to ${MAX_FILES} images at a time.`,
   VERIFICATION_FAILED: "Verification expired or failed. Please try again.",
+  AUTH_REQUIRED: "Sign in to process images.",
+  INSUFFICIENT_CREDITS: "You are out of active image credits. Choose a pack to continue.",
   UPSTREAM_REJECTED: "Remove.bg could not isolate this subject. Try a clearer product photo.",
   UPSTREAM_QUOTA_EXCEEDED: "The service has reached its processing limit. Please try again later.",
   UPSTREAM_RATE_LIMITED: "The service is busy. Wait a moment and retry this image.",
