@@ -12,6 +12,12 @@ export type CreditReservation = {
   grantId: string;
 };
 
+export type CreditBalance = {
+  total: number;
+  paid: number;
+  free: number;
+};
+
 function addDays(date: Date, days: number): string {
   return new Date(date.getTime() + days * 24 * 60 * 60 * 1000).toISOString();
 }
@@ -28,16 +34,27 @@ export async function grantFreeTrial(database: AuthDatabase, userId: string): Pr
     .run();
 }
 
-export async function getCreditBalance(database: AuthDatabase, userId: string): Promise<number> {
+export async function getCreditBreakdown(database: AuthDatabase, userId: string): Promise<CreditBalance> {
   const row = await database
     .prepare(
-      `SELECT COALESCE(SUM(credits_total - credits_used), 0) AS balance
+      `SELECT
+         COALESCE(SUM(credits_total - credits_used), 0) AS total,
+         COALESCE(SUM(CASE WHEN source = 'paypal' THEN credits_total - credits_used ELSE 0 END), 0) AS paid,
+         COALESCE(SUM(CASE WHEN source = 'free_trial' THEN credits_total - credits_used ELSE 0 END), 0) AS free
        FROM credit_grants
        WHERE user_id = ? AND expires_at > ? AND credits_used < credits_total`,
     )
     .bind(userId, new Date().toISOString())
-    .first<{ balance: number }>();
-  return Number(row?.balance ?? 0);
+    .first<{ total: number; paid: number; free: number }>();
+  return {
+    total: Number(row?.total ?? 0),
+    paid: Number(row?.paid ?? 0),
+    free: Number(row?.free ?? 0),
+  };
+}
+
+export async function getCreditBalance(database: AuthDatabase, userId: string): Promise<number> {
+  return (await getCreditBreakdown(database, userId)).total;
 }
 
 export async function reserveCredit(

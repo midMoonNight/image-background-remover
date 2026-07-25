@@ -32,7 +32,10 @@ export function AuthControls() {
 
   async function logout() {
     const response = await fetch("/api/auth/logout", { method: "POST" });
-    if (response.ok) setUser(null);
+    if (response.ok) {
+      setUser(null);
+      window.dispatchEvent(new Event("auth-changed"));
+    }
   }
 
   if (loading) return <span className="hidden h-9 w-24 animate-pulse rounded-full bg-slate-200 sm:block" />;

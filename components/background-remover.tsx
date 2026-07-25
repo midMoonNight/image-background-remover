@@ -33,6 +33,7 @@ type ImageJob = {
 type BackgroundRemoverProps = {
   getTurnstileToken: () => Promise<string>;
   turnstileReady: boolean;
+  onCreditUsed: () => void;
 };
 
 const ACCEPT_ATTRIBUTE = ACCEPTED_MIME_TYPES.join(",");
@@ -52,7 +53,7 @@ function formatBytes(size: number) {
   return `${(size / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function BackgroundRemover({ getTurnstileToken, turnstileReady }: BackgroundRemoverProps) {
+export function BackgroundRemover({ getTurnstileToken, turnstileReady, onCreditUsed }: BackgroundRemoverProps) {
   const [jobs, setJobs] = useState<ImageJob[]>([]);
   const [background, setBackground] = useState<BackgroundMode>("white");
   const [preset, setPreset] = useState<SizePreset>("original");
@@ -161,6 +162,7 @@ export function BackgroundRemover({ getTurnstileToken, turnstileReady }: Backgro
 
         const transparentBlob = await response.blob();
         updateJob(job.id, { status: "success", transparentBlob });
+        onCreditUsed();
         setSelectedJobId(job.id);
         setCompletionToast(`${job.file.name} is ready to download.`);
       } catch (error) {
@@ -170,7 +172,7 @@ export function BackgroundRemover({ getTurnstileToken, turnstileReady }: Backgro
         runningRef.current -= 1;
       }
     },
-    [getTurnstileToken, updateJob],
+    [getTurnstileToken, onCreditUsed, updateJob],
   );
 
   useEffect(() => {
