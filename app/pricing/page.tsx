@@ -87,7 +87,7 @@ export default function PricingPage() {
             </article>
           ))}
         </div>
-        <p className="mt-6 text-center text-sm text-slate-500">Secure one-time checkout via PayPal. Credits are added immediately after a completed payment.</p>
+        <p className="mt-6 text-center text-sm text-slate-500">Secure one-time checkout via PayPal or Creem. Credits are added after payment confirmation.</p>
       </section>
 
       <section className="bg-slate-950 py-20 text-white noise-grid">

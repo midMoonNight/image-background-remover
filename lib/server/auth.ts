@@ -22,6 +22,12 @@ export type AuthEnvironment = {
   PAYPAL_CLIENT_SECRET?: string;
   PAYPAL_ENV?: string;
   PAYPAL_WEBHOOK_ID?: string;
+  CREEM_API_KEY?: string;
+  CREEM_WEBHOOK_SECRET?: string;
+  CREEM_ENV?: string;
+  CREEM_STARTER_PRODUCT_ID?: string;
+  CREEM_SELLER_PRODUCT_ID?: string;
+  CREEM_BUSINESS_PRODUCT_ID?: string;
 };
 
 type D1RunResult = {
