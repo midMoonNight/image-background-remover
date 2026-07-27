@@ -4,11 +4,15 @@ import { getCreditBreakdown } from "@/lib/server/credits";
 
 describe("getCreditBreakdown", () => {
   it("returns paid, free, and total active credits", async () => {
+    let query = "";
     const database = {
-      prepare: () => ({
-        bind() { return this; },
-        first: async () => ({ total: 42, paid: 40, free: 2 }),
-      }),
+      prepare: (sql: string) => {
+        query = sql;
+        return {
+          bind() { return this; },
+          first: async () => ({ total: 42, paid: 40, free: 2 }),
+        };
+      },
     };
 
     await expect(getCreditBreakdown(database as never, "user-id")).resolves.toEqual({
@@ -16,6 +20,7 @@ describe("getCreditBreakdown", () => {
       paid: 40,
       free: 2,
     });
+    expect(query).toContain("source IN ('paypal', 'creem')");
   });
 
   it("returns zeroes when no active grants exist", async () => {

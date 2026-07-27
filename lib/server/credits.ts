@@ -39,7 +39,7 @@ export async function getCreditBreakdown(database: AuthDatabase, userId: string)
     .prepare(
       `SELECT
          COALESCE(SUM(credits_total - credits_used), 0) AS total,
-         COALESCE(SUM(CASE WHEN source = 'paypal' THEN credits_total - credits_used ELSE 0 END), 0) AS paid,
+         COALESCE(SUM(CASE WHEN source IN ('paypal', 'creem') THEN credits_total - credits_used ELSE 0 END), 0) AS paid,
          COALESCE(SUM(CASE WHEN source = 'free_trial' THEN credits_total - credits_used ELSE 0 END), 0) AS free
        FROM credit_grants
        WHERE user_id = ? AND expires_at > ? AND credits_used < credits_total`,
