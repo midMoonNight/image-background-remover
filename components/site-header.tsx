@@ -10,7 +10,7 @@ export function SiteHeader() {
         <span className="grid size-9 place-items-center rounded-xl bg-violet-600 text-white">
           <SparkleIcon className="size-5" />
         </span>
-        <span className="font-[family-name:var(--font-heading)] text-lg font-extrabold tracking-tight">Clearcut</span>
+        <span className="font-[family-name:var(--font-heading)] text-lg font-extrabold tracking-tight">ListingCut</span>
       </Link>
       <nav className="flex items-center gap-4 text-sm font-semibold text-slate-600 sm:gap-7" aria-label="Main navigation">
         <Link href="/#how-it-works" className="hidden hover:text-slate-950 lg:block">How it works</Link>

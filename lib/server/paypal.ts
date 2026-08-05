@@ -62,14 +62,14 @@ export async function createPayPalOrder(input: {
           reference_id: input.localOrderId,
           custom_id: input.localOrderId,
           invoice_id: input.localOrderId,
-          description: `Clearcut ${input.plan.name} - ${input.plan.credits} image credits`,
+          description: `ListingCut ${input.plan.name} - ${input.plan.credits} image credits`,
           amount: { currency_code: "USD", value: input.plan.amount },
         },
       ],
       payment_source: {
         paypal: {
           experience_context: {
-            brand_name: "Clearcut",
+            brand_name: "ListingCut",
             shipping_preference: "NO_SHIPPING",
             user_action: "PAY_NOW",
             return_url: `${input.origin}/api/paypal/capture`,

@@ -9,7 +9,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
 export const metadata: Metadata = {
-  title: "Pricing | Clearcut Background Remover",
+  title: "Pricing | ListingCut Background Remover",
   description: "Simple image credit packs for product background removal. No subscription required.",
 };
 
@@ -34,7 +34,7 @@ const faqs = [
   { question: "When is a credit charged?", answer: "One credit is charged only after the background-removal service returns a successful result. Failed requests and network errors do not consume a credit." },
   { question: "Do background and size changes use more credits?", answer: "No. Switching between white and transparent backgrounds or changing marketplace canvas presets happens in your browser and does not spend another credit." },
   { question: "Is this a subscription?", answer: "No. These are one-time credit packs with no automatic renewal. We may introduce optional subscriptions later for high-volume users." },
-  { question: "Are my product images stored?", answer: "No persistent copy or image history is kept by Clearcut. Images are processed for the active request, while previews and ZIP files are created in your browser." },
+  { question: "Are my product images stored?", answer: "No persistent copy or image history is kept by ListingCut. Images are processed for the active request, while previews and ZIP files are created in your browser." },
 ];
 
 export default function PricingPage() {
